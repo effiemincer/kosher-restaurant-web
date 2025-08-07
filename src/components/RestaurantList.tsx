@@ -1,8 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import supabase from '../supabaseClient'
 
+enum Hechsher {
+  None = 'None',
+  OU = 'OU',
+  Rabanut = "Rabanut",
+  BeitYosef = 'Beit Yosef',
+  Rubin = 'Rubin',
+  YoraDeah = 'Yora Deah',
+  EidaChareidis = 'Eida Chareidis',
+}
+
+enum CuisineType {
+  None = 'None',
+  Meat = 'Meat',
+  Dairy = 'Dairy',
+  Bakery = 'Bakery',
+  Cafe = 'Cafe',
+}
+
+type Restaurant = {
+  id: number;
+  name: string;
+  type: CuisineType;
+  hechsher: Hechsher;
+  location: string;
+  menu_image_url?: string;
+  hechser_image_url?: string;
+};
+
 function RestaurantList() {
-  const [restaurants, setRestaurants] = useState([])
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
   const [selectedType, setSelectedType] = useState('All')
   const [selectedLocation, setSelectedLocation] = useState('All')
 
