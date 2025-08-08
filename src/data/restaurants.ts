@@ -8,6 +8,7 @@ export const restaurants: Restaurant[] = [
     cuisine: 'Israeli',
     city: 'New York',
     website: 'https://kosherdelight.com',
+    hechsher: 'Mock Hechsher',
   },
   {
     id: '2',
@@ -16,6 +17,8 @@ export const restaurants: Restaurant[] = [
     cuisine: 'Bakery',
     city: 'Los Angeles',
     website: 'https://holybagel.com',
+    hechsher: 'Mock Hechsher',
   },
+  
   // Add more...
 ];

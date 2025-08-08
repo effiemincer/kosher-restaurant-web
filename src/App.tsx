@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
-import { restaurants } from './data/restaurants';
+import { useEffect, useState } from 'react';
 import SearchBar from './components/SearchBar';
 import RestaurantList from './components/RestaurantList';
 import logo from './logo.svg';
 import './App.css';
 import { Restaurant } from './types/restaurant';
+import supabase from './supabaseClient';
 
 const SORT_OPTIONS = [
   { label: 'Name', value: 'name' },
   { label: 'City', value: 'city' },
   { label: 'Cuisine', value: 'cuisine' },
+  { label: 'Hechsher', value: 'hechsher' },
 ];
 
 function App() {
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState<keyof Restaurant>('name');
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchRestaurants() {
+      const { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+
+        console.log("Supabase data:", data)
+        console.log("Supabase error:", error)
+
+
+      if (error) {
+        console.error(error)
+      } else {
+        setRestaurants(data || [])
+      }
+      setLoading(false)
+    }
+
+    fetchRestaurants()
+  }, [])
   const filtered = restaurants
     .filter(r =>
       r.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -57,6 +81,9 @@ function App() {
               ))}
             </select>
           </div>
+          {loading && (
+              <p>Loading restaurants...</p>
+          )}
           <RestaurantList restaurants={filtered} />
         </div>
       </div>
