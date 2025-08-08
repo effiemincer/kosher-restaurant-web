@@ -1,91 +1,52 @@
-import React, { useEffect, useState } from 'react'
-import supabase from '../supabaseClient'
+import React from 'react';
+import { Restaurant } from '../types/restaurant';
 
-enum Hechsher {
-  None = 'None',
-  OU = 'OU',
-  Rabanut = "Rabanut",
-  BeitYosef = 'Beit Yosef',
-  Rubin = 'Rubin',
-  YoraDeah = 'Yora Deah',
-  EidaChareidis = 'Eida Chareidis',
+interface Props {
+  restaurants: Restaurant[];
 }
 
-enum CuisineType {
-  None = 'None',
-  Meat = 'Meat',
-  Dairy = 'Dairy',
-  Bakery = 'Bakery',
-  Cafe = 'Cafe',
-}
-
-type Restaurant = {
-  id: number;
-  name: string;
-  type: CuisineType;
-  hechsher: Hechsher;
-  location: string;
-  menu_image_url?: string;
-  hechser_image_url?: string;
-};
-
-function RestaurantList() {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
-  const [selectedType, setSelectedType] = useState('All')
-  const [selectedLocation, setSelectedLocation] = useState('All')
-
-  useEffect(() => {
-    async function fetchData() {
-      const { data, error } = await supabase
-        .from('restaurants')
-        .select('*')
-
-      if (error) console.error('Error:', error)
-      else setRestaurants(data)
-    }
-
-    fetchData()
-  }, [])
-
-  // 🟡 Here's the filtering logic you asked about:
-  const filtered = restaurants.filter(r => 
-    (selectedType === 'All' || r.type === selectedType) &&
-    (selectedLocation === 'All' || r.location === selectedLocation)
-  )
-
-  return (
-    <div>
-      <h2>Kosher Restaurants</h2>
-
-      {/* Example filter dropdowns */}
-      <div>
-        <label>Type:</label>
-        <select value={selectedType} onChange={e => setSelectedType(e.target.value)}>
-          <option value="All">All</option>
-          <option value="Meat">Meat</option>
-          <option value="Dairy">Dairy</option>
-          <option value="Pareve">Pareve</option>
-        </select>
-
-        <label>Location:</label>
-        <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}>
-          <option value="All">All</option>
-          <option value="Jerusalem">Jerusalem</option>
-          <option value="Bnei Brak">Bnei Brak</option>
-          <option value="Tel Aviv">Tel Aviv</option>
-        </select>
+const RestaurantList: React.FC<Props> = ({ restaurants }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    {restaurants.map(r => (
+      <div
+        key={r.id}
+        style={{
+          borderRadius: '12px',
+          background: '#fff',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          padding: '1.5rem 2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem',
+        }}
+      >
+        <div style={{ fontSize: '1.25rem', fontWeight: 600 }}>{r.name}</div>
+        <div style={{ color: '#64748b', fontSize: '1rem' }}>{r.cuisine} • {r.city}</div>
+        <div style={{ color: '#64748b', fontSize: '0.95rem' }}>{r.address}</div>
+        {r.hechsher && (
+          <div style={{ fontSize: '0.9rem', color: '#22c55e', fontWeight: 500 }}>
+            Hechsher: {r.hechsher}
+          </div>
+        )}
+        {r.website && (
+          <a
+            href={r.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              marginTop: '0.5rem',
+              color: '#2563eb',
+              textDecoration: 'none',
+              fontWeight: 500,
+              fontSize: '0.95rem'
+            }}
+          >
+            Visit Website
+          </a>
+        )}
       </div>
+    ))}
+  </div>
+);
 
-      <ul>
-        {filtered.map(r => (
-          <li key={r.id}>
-            <h3>{r.name}</h3>
-            <p>Type: {r.type} | Hechsher: {r.hechsher} | Location: {r.location}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-export default RestaurantList
+export default RestaurantList;
